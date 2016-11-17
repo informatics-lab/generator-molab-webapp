@@ -6,12 +6,11 @@ var del = require('del');
 var htmlmin = require('gulp-htmlmin');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
-var browserify = require('browserify');
 var browserSync = require('browser-sync').create();
 var pump = require('pump');
+var rollup = require('gulp-rollup');
+var babel = require('rollup-plugin-babel');
 
 const BUILD_DEST = "./build";
 
@@ -35,29 +34,30 @@ gulp.task('clean:css', function () {
 gulp.task('build:static', function() {
     return gulp.src('./src/static/**/*')
         .pipe(gulp.dest(BUILD_DEST));
-});
+})
 gulp.task('build:html', function () {
     return gulp.src('./src/html/*.html')
         .pipe(htmlmin({collapseWhitespace: true}))
         .pipe(gulp.dest(BUILD_DEST));
 });
 
-gulp.task('build:js', function () {
-    // set up the browserify instance on a task basis
-    var b = browserify({
-        entries: './src/js/main.js'
-    });
-
-    return pump([
-        b.bundle(),
-        source('app.min.js'),
-        buffer(),
+gulp.task('build:js', function(cb) {
+    pump([
+        gulp.src('./src/js/**/*.js'),
         sourcemaps.init({loadMaps: true}),
-        // Add transformation tasks to the pipeline here.
-        // uglify(),
+        rollup({
+            entry: './src/js/main.js',
+            plugins: [
+                babel({
+                    exclude: 'node_modules/**'
+                })
+            ]
+        }),
+        uglify(),
         sourcemaps.write('./'),
         gulp.dest(BUILD_DEST+'/js/')
-    ]);
+        ],
+    cb);
 });
 
 gulp.task('build:css', function () {
