@@ -35,13 +35,13 @@ gulp.task('build:static', function() {
     return gulp.src('./src/static/**/*')
         .pipe(gulp.dest(BUILD_DEST));
 })
-gulp.task('build:html', function () {
+gulp.task('build:html', ['clean:html'], function () {
     return gulp.src('./src/html/*.html')
         .pipe(htmlmin({collapseWhitespace: true}))
         .pipe(gulp.dest(BUILD_DEST));
 });
 
-gulp.task('build:js', function(cb) {
+gulp.task('build:js', ['clean:js'], function(cb) {
     pump([
         gulp.src('./src/js/**/*.js'),
         sourcemaps.init({loadMaps: true}),
@@ -60,15 +60,15 @@ gulp.task('build:js', function(cb) {
     cb);
 });
 
-gulp.task('build:css', function () {
+gulp.task('build:css', ['clean:css'], function () {
     return gulp.src('./src/sass/styles.scss')
         .pipe(sass({outputStyle: 'compressed'}))        //minified
         .pipe(sass())
         .pipe(gulp.dest(BUILD_DEST + '/css'));
 });
 
-gulp.task('build', function() {
-    runSequence('clean', ['build:static', 'build:html', 'build:css', 'build:js']);
+gulp.task('build', function(cb) {
+    runSequence('clean', ['build:static', 'build:html', 'build:css', 'build:js'], cb);
 });
 
 
@@ -94,8 +94,8 @@ gulp.task('watch:js', function() {
 gulp.task('watch:html', function() {
     gulp.watch('./src/html/**/*', ['clean:html', 'build:html']).on('change', browserSync.reload);
 });
-gulp.task('watch', function() {
-    runSequence('build', ['watch:html', 'watch:css', 'watch:js']);
+gulp.task('watch', function(cb) {
+    runSequence('build', ['watch:html', 'watch:css', 'watch:js'], cb);
 });
 
 
@@ -110,5 +110,6 @@ gulp.task('default', function () {
         '\t* build - build the project\n' +
         '\t\t-build:html - builds just the html\n' +
         '\t\t-build:css - builds just the css\n' +
-        '\t\t-build:js - builds just the js\n');
+        '\t\t-build:js - builds just the js\n'
+        '\t* serve - cleans, builds, watches and serves\n');
 });
