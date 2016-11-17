@@ -1,7 +1,5 @@
 {
-  "name": "my-web-app",
   "version": "1.0.0",
-  "description": "",
   "license": "GPL-3.0",
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.18.0",
@@ -9,6 +7,7 @@
     "browser-sync": "^2.14.0",
     "del": "^2.2.1",
     "gulp": "^3.9.1",
+    "gulp-html-replace": "latest",
     "gulp-htmlmin": "^2.0.0",
     "gulp-rollup": "^2.5.1",
     "gulp-sass": "^2.3.2",
