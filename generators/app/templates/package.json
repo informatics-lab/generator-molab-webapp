@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel": "^6.5.2"
+    "babel": "^6.5.2",
+    "gulp": "^3.9.1",
+    "rollup": "^0.36.3"
   }
 }
