@@ -2,15 +2,21 @@
   "name": "my-web-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "babel": "^6.5.2",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "browser-sync": "^2.14.0",
+    "del": "^2.2.1",
     "gulp": "^3.9.1",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "pump": "^1.0.1",
+    "run-sequence": "^1.2.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+    "babel": "^6.5.2",
     "rollup": "^0.36.3"
   }
 }
