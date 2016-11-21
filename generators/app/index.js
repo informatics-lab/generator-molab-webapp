@@ -2,11 +2,11 @@
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
-var fs = require('fs');
+var fse = require('fs-extra');
 
 var projectDescriptor = require('./package');
 
-const PACKAGE_JSON = 'templates/package.json';
+const PACKAGE_JSON = 'package.json';
 
 module.exports = yeoman.Base.extend({
   prompting: function () {
@@ -29,20 +29,29 @@ module.exports = yeoman.Base.extend({
     return this.prompt(prompts).then(function (props) {
       // To access props later use this.props.someAnswer;
       this.props = props;
-
-      projectDescriptor['name'] = this.props.appName;
-
+      projectDescriptor['name'] = this.props.appName; 
+      this.destinationRoot(this.props.appName);
     }.bind(this));
   },
 
   writing: function () {
+    var that = this;
 
-    fs.writeFile(PACKAGE_JSON, JSON.stringify(projectDescriptor));
+    var writeProject = new Promise(function(resolve, reject){
+      fse.copy(
+        that.templatePath(),
+        that.destinationPath(),
+        resolve);
+    });
 
-    this.fs.copy(
-      this.templatePath(),
-      this.destinationPath()
-    );
+    writeProject.then(function() {
+      fse.writeFile(PACKAGE_JSON, JSON.stringify(projectDescriptor), (err) => {
+        if (err) throw err;
+        console.log('It\'s saved!');
+      });  
+    }).catch(function(err){
+      throw(err)
+    })
   },
 
   install: function () {

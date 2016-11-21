@@ -40,10 +40,10 @@ gulp.task('build:static', function () {
 gulp.task('build:html', ['clean:html'], function () {
 
   gulp.src('./src/html/*.html')
-    .pipe(htmlreplace({
+    .pipe(htmlReplace({
       'title': PACKAGE_JSON.name,
-      'css': 'css/styles.min.css',
-      'js': 'js/app.min.js'
+      'css': 'css/styles.css',
+      'js': 'js/main.js'
     }))
     .pipe(htmlmin({collapseWhitespace: true}))
     .pipe(gulp.dest(BUILD_DEST));
