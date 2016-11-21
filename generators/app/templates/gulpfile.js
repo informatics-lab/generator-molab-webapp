@@ -12,6 +12,7 @@ var pump = require('pump');
 var rollup = require('gulp-rollup');
 var babel = require('rollup-plugin-babel');
 var htmlReplace = require('gulp-html-replace');
+var rename = require('gulp-rename');
 
 const PACKAGE_JSON = require('./package');
 const BUILD_DEST = "./build";
@@ -42,8 +43,8 @@ gulp.task('build:html', ['clean:html'], function () {
   gulp.src('./src/html/*.html')
     .pipe(htmlReplace({
       'title': PACKAGE_JSON.name,
-      'css': 'css/styles.css',
-      'js': 'js/main.js'
+      'css': 'css/styles.min.css',
+      'js': 'js/app.min.js'
     }))
     .pipe(htmlmin({collapseWhitespace: true}))
     .pipe(gulp.dest(BUILD_DEST));
@@ -60,6 +61,7 @@ gulp.task('build:js', ['clean:js'], function (cb) {
           })
         ]
       }),
+      rename('app.min.js'),
       uglify(),
       sourcemaps.write('./'),
       gulp.dest(BUILD_DEST + '/js/')
@@ -70,6 +72,7 @@ gulp.task('build:css', ['clean:css'], function () {
   gulp.src('./src/sass/styles.scss')
     .pipe(sass({outputStyle: 'compressed'}))        //minified
     .pipe(sass())
+    .pipe(rename('styles.min.css'))
     .pipe(gulp.dest(BUILD_DEST + '/css'));
 });
 

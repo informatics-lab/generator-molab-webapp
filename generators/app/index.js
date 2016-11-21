@@ -29,7 +29,7 @@ module.exports = yeoman.Base.extend({
     return this.prompt(prompts).then(function (props) {
       // To access props later use this.props.someAnswer;
       this.props = props;
-      projectDescriptor['name'] = this.props.appName; 
+      projectDescriptor['name'] = this.props.appName;
       this.destinationRoot(this.props.appName);
     }.bind(this));
   },
@@ -46,9 +46,11 @@ module.exports = yeoman.Base.extend({
 
     writeProject.then(function() {
       fse.writeFile(PACKAGE_JSON, JSON.stringify(projectDescriptor), (err) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         console.log('It\'s saved!');
-      });  
+      });
     }).catch(function(err){
       throw(err)
     })
