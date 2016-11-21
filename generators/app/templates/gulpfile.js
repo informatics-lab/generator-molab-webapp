@@ -43,7 +43,7 @@ gulp.task('build:html', ['clean:html'], function () {
   gulp.src('./src/html/*.html')
     .pipe(htmlReplace({
       'title': PACKAGE_JSON.name,
-      'css': 'css/styles.min.css',
+      'css': 'css/styles.css',
       'js': 'js/app.min.js'
     }))
     .pipe(htmlmin({collapseWhitespace: true}))
@@ -72,7 +72,6 @@ gulp.task('build:css', ['clean:css'], function () {
   gulp.src('./src/sass/styles.scss')
     .pipe(sass({outputStyle: 'compressed'}))        //minified
     .pipe(sass())
-    .pipe(rename('styles.min.css'))
     .pipe(gulp.dest(BUILD_DEST + '/css'));
 });
 
