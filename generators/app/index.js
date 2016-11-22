@@ -1,4 +1,5 @@
 'use strict';
+
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
@@ -9,12 +10,17 @@ var projectDescriptor = require('./package');
 const PACKAGE_JSON = 'package.json';
 
 module.exports = yeoman.Base.extend({
-  prompting: function () {
+
+  initializing: function () {
     // Have Yeoman greet the user.
     this.log(yosay(
       "Welcome to the top-notch " + chalk.green('generator-molab-webapp') + " generator!"
     ));
 
+    this.composeWith('molab-webapp:threejs');
+  },
+
+  prompting: function () {
     var prompts = [
       {
         type: "input",
@@ -29,34 +35,35 @@ module.exports = yeoman.Base.extend({
     return this.prompt(prompts).then(function (props) {
       // To access props later use this.props.someAnswer;
       this.props = props;
-      projectDescriptor['name'] = this.props.appName;
+      this.props.projectDescriptor = projectDescriptor;
+      this.props.projectDescriptor['name'] = this.props.appName;
       this.destinationRoot(this.props.appName);
     }.bind(this));
   },
 
   writing: function () {
-    var that = this;
+    var self = this;
 
-    var writeProject = new Promise(function(resolve, reject){
+    var writeProject = new Promise(function (resolve, reject) {
       fse.copy(
-        that.templatePath(),
-        that.destinationPath(),
-        resolve);
+        self.templatePath(),
+        self.destinationPath(),
+        resolve
+      );
     });
 
-    writeProject.then(function() {
-      fse.writeFile(PACKAGE_JSON, JSON.stringify(projectDescriptor), (err) => {
+    writeProject.then(function () {
+      fse.writeFile(PACKAGE_JSON, JSON.stringify(self.props.projectDescriptor), (err) => {
         if (err) {
           throw err;
         }
-        console.log('It\'s saved!');
       });
-    }).catch(function(err){
+    }).catch(function (err) {
       throw(err)
     })
   },
 
   install: function () {
-    this.installDependencies();
+    this.npmInstall();
   }
 });
