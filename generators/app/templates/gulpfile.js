@@ -13,6 +13,7 @@ var rollup = require('gulp-rollup');
 var babel = require('rollup-plugin-babel');
 var htmlReplace = require('gulp-html-replace');
 var rename = require('gulp-rename');
+var mocha = require('gulp-mocha');
 
 const PACKAGE_JSON = require('./package');
 const BUILD_DEST = "./build";
@@ -76,7 +77,7 @@ gulp.task('build:css', ['clean:css'], function () {
 });
 
 gulp.task('build', function (cb) {
-  runSequence('clean', ['build:static', 'build:html', 'build:css', 'build:js'], cb);
+  runSequence('test', 'clean', ['build:static', 'build:html', 'build:css', 'build:js'], cb);
 });
 
 
@@ -105,6 +106,12 @@ gulp.task('watch:html', function () {
 gulp.task('watch', function (cb) {
   runSequence('build', ['watch:html', 'watch:css', 'watch:js'], cb);
 });
+
+//TEST
+gulp.task('test', () => 
+    gulp.src('./test/test.js', {read: false})
+        .pipe(mocha({reporter: 'spec'}))
+);
 
 
 gulp.task('default', function () {
