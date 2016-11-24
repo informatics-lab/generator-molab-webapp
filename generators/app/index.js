@@ -1,4 +1,5 @@
 'use strict';
+
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
@@ -9,12 +10,15 @@ var projectDescriptor = require('./package');
 const PACKAGE_JSON = 'package.json';
 
 module.exports = yeoman.Base.extend({
-  prompting: function () {
+
+  initializing: function () {
     // Have Yeoman greet the user.
     this.log(yosay(
       "Welcome to the top-notch " + chalk.green('generator-molab-webapp') + " generator!"
     ));
+  },
 
+  prompting: function () {
     var prompts = [
       {
         type: "input",
@@ -23,40 +27,58 @@ module.exports = yeoman.Base.extend({
         desc: 'my-web-app',
         message: "What's your project name?",
         default: "my-web-app" // Default to current folder name
+      },
+      {
+        type: "confirm",
+        name: "threejs",
+        required: true,
+        message: "Is this a ThreeJS project?",
+        default: false
       }
     ];
 
-    return this.prompt(prompts).then(function (props) {
-      // To access props later use this.props.someAnswer;
-      this.props = props;
-      projectDescriptor['name'] = this.props.appName;
-      this.destinationRoot(this.props.appName);
-    }.bind(this));
+    return this.prompt(prompts)
+      .then(function (props) {
+          // To access props later use this.props.someAnswer;
+          this.props = props;
+          this['projectDescriptor'] = projectDescriptor;
+          this.projectDescriptor['name'] = this.props.appName;
+          this.destinationRoot(this.props.appName);
+
+          if (this.props.threejs) {
+            this.composeWith('molab-webapp:threejs', {options: {destinationPath: this.destinationPath()}})
+          }
+        }.bind(this)
+      );
   },
 
   writing: function () {
-    var that = this;
+    this.log("writing base webapp files to project");
+    var self = this;
+    var done = self.async();
 
-    var writeProject = new Promise(function(resolve, reject){
+    var writeProject = new Promise(function (resolve, reject) {
       fse.copy(
-        that.templatePath(),
-        that.destinationPath(),
-        resolve);
+        self.templatePath(),
+        self.destinationPath(),
+        resolve
+      );
     });
 
-    writeProject.then(function() {
-      fse.writeFile(PACKAGE_JSON, JSON.stringify(projectDescriptor), (err) => {
+    writeProject.then(function () {
+      fse.writeFile(PACKAGE_JSON, JSON.stringify(self.projectDescriptor), (err) => {
         if (err) {
           throw err;
         }
-        console.log('It\'s saved!');
+        done();
       });
-    }).catch(function(err){
+    }).catch(function (err) {
       throw(err)
     })
   },
 
   install: function () {
-    this.installDependencies();
+    this.log("installing base dependencies");
+    this.npmInstall();
   }
 });

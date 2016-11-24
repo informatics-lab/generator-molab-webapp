@@ -3,20 +3,37 @@
   "version": "1.0.0",
   "license": "GPL-3.0",
   "devDependencies": {
-    "babel-plugin-external-helpers": "^6.18.0",
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
     "babel-preset-es2015": "^6.18.0",
     "browser-sync": "^2.14.0",
     "del": "^2.2.1",
+    "eslint-config-es2015": "^1.1.0",
+    "eslint-config-google": "^0.7.0",
     "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-eslint": "^3.0.1",
     "gulp-html-replace": "^1.6.2",
     "gulp-htmlmin": "^2.0.0",
-    "gulp-rollup": "^2.5.1",
-    "gulp-rename": "^1.2.2",
+    "gulp-if": "^2.0.2",
+    "gulp-load-plugins": "^1.4.0",
+    "gulp-newer": "^1.3.0",
     "gulp-sass": "^2.3.2",
+    "gulp-size": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-uglify": "^2.0.0",
     "pump": "^1.0.1",
-    "rollup-plugin-babel": "^2.6.1",
-    "run-sequence": "^1.2.2"
+    "run-sequence": "^1.2.2",
+    "webpack": "^1.13.3",
+    "webpack-stream": "^3.2.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "es2015",
+      "google"
+    ],
+    "parserOptions": {
+      "sourceType": "module"
+    }
   }
 }
