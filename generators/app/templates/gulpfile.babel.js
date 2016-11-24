@@ -1,35 +1,30 @@
 'use strict';
 
-import path from "path";
-import gulp from "gulp";
-import del from "del";
-import pump from 'pump';
-import runSequence from "run-sequence";
-import browserSync from "browser-sync";
-import gulpLoadPlugins from "gulp-load-plugins";
-import browserify from "browserify";
-import watchify from "watchify";
-import babelify from "babelify";
-import source from "vinyl-source-stream";
-import buffer from "vinyl-buffer";
-import assign from "lodash.assign";
-import pkg from "./package";
+import path from 'path';
+import gulp from 'gulp';
+import del from 'del';
+import runSequence from 'run-sequence';
+import browserSync from 'browser-sync';
+import gulpLoadPlugins from 'gulp-load-plugins';
+import ws from 'webpack-stream';
+import webpack from 'webpack';
+import pkg from './package';
 
-const ALL = path.join("**", "*.*");
+const ALL = path.join('**', '*.*');
 
-const BUILD = path.join(__dirname, "build");
-const BUILD_JS = path.join(BUILD, "js");
-const BUILD_CSS = path.join(BUILD, "css");
+const BUILD = path.join(__dirname, 'build');
+const BUILD_JS = path.join(BUILD, 'js');
+const BUILD_CSS = path.join(BUILD, 'css');
 
-const TMP = path.join(__dirname, ".tmp");
-const TMP_JS = path.join(TMP, "js");
-const TMP_CSS = path.join(TMP, "css");
+const TMP = path.join(__dirname, '.tmp');
+const TMP_JS = path.join(TMP, 'js');
+const TMP_CSS = path.join(TMP, 'css');
 
-const SRC = path.join(__dirname, "src");
-const SRC_JS = path.join(SRC, "js");
-const SRC_HTML = path.join(SRC, "html");
-const SRC_SASS = path.join(SRC, "sass");
-const SRC_STATIC = path.join(SRC, "static");
+const SRC = path.join(__dirname, 'src');
+const SRC_JS = path.join(SRC, 'js');
+const SRC_HTML = path.join(SRC, 'html');
+const SRC_SASS = path.join(SRC, 'sass');
+const SRC_STATIC = path.join(SRC, 'static');
 
 const $ = gulpLoadPlugins();
 const RELOAD = browserSync.reload;
@@ -66,7 +61,7 @@ gulp.task('build:html', () =>
     .pipe($.htmlReplace({
       'title': pkg.name,
       'css': path.join('css', 'styles.css'),
-      'js': path.join('js', 'app.js')
+      'js': path.join('js', 'app.min.js')
     }))
     .pipe($.htmlmin({
       removeComments: true,
@@ -83,32 +78,44 @@ gulp.task('build:html', () =>
     .pipe($.size({title: 'build:html', showFiles: true}))
 );
 
-let customOpts = {
-  entries: [path.join(SRC_JS, "main.js")],
-  debug: true,
-};
-let opts = assign({}, watchify.args, customOpts);
-let b = watchify(browserify(opts));
-b.transform(babelify, {presets: ["es2015"]});
+gulp.task('build:js', () => {
 
-function bundle() {
-  return pump([
-      b.bundle(),
-      source('app.js'),
-      buffer(),
-      $.sourcemaps.init({loadMaps: true}),
-      // $.sourcemaps.write(),
-      // gulp.dest(TMP_JS),
-      // source('app.min.js'),
-      $.uglify(),
-      $.sourcemaps.write('./'),
-      gulp.dest(BUILD_JS),
-      $.size({title: 'build:js', showFiles: true})
-    ]);
-}
+  let config = {
+    entry: path.join(SRC_JS, 'main.js'),
+    output: {
+      path: BUILD_JS,
+      filename: 'app.min.js'
+    },
+    devtool: 'source-map',
+    module: {
+      loaders: [
+        {
+          test: /\.js$/,
+          exclude: /(node_modules)/,
+          loader: 'babel-loader',
+          query: {
+            presets: ['es2015']
+          }
+        }
+      ]
+    },
+    plugins: [
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false,
+        },
+        output: {
+          comments: false,
+        }
+      }),
+      new webpack.optimize.DedupePlugin()
+    ]
+  };
 
-gulp.task('build:js', bundle);
-b.on('update', bundle);
+  return gulp.src(path.join(SRC_JS, ALL))
+    .pipe(ws(config))
+    .pipe(gulp.dest(BUILD_JS));
+});
 
 gulp.task('build:css', () => {
   const AUTOPREFIXER_BROWSERS = [
