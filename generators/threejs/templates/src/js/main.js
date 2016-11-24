@@ -1,7 +1,7 @@
 /* eslint-env browser */
 'use strict';
 
-import THREE from "three";
+import * as THREE from 'three';
 
 let scene;
 let camera;
@@ -40,11 +40,11 @@ function init() {
   window.addEventListener('resize', onWindowResize, false);
 
   // add stuff to our scene ...
-  let geometry = new THREE.CubeGeometry(size, size);
+  let geometry = new THREE.CubeGeometry(1, 1);
   let material = new THREE.MeshBasicMaterial({color: 'blue'});
   let mesh = new THREE.Mesh(geometry, material);
 
-  self.scene.add(mesh);
+  scene.add(mesh);
 
   animate(0);
 }
