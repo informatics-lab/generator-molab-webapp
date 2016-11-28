@@ -34,7 +34,7 @@ module.exports = yeoman.Base.extend({
 
   install: function () {
     this.log("installing threejs goodies");
-    this.npmInstall(['three', 'stats-js', 'tween.js'], {'save': true});
+    this.npmInstall(['dat-gui', 'stats-js', 'three', 'three-orbit-controls', 'tween.js'], {'save': true});
   }
 
 });
